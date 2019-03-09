@@ -5,33 +5,48 @@ import json
 from apiclient import discovery
 from google.oauth2 import service_account
 
-# Constants
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-CLIENT_SECRET_PATH = 'credentials/client_secret.json'
-SPREADSHEET_ID_PATH = 'credentials/sheet_id'
+from constants import *
 
 class SheetsApi(object):
 	def __init__(self):
-		self.credentials = self.getCredentials()
+		self.credentials = self._getCredentials()
 		self.service = discovery.build('sheets', 'v4', credentials=self.credentials)
-		self.sheet = self.service.spreadsheets()
+		self.sheet = self.service.spreadsheets().values()
+		self.sheetID = self._getSpreadSheetID()
 
-	def getSpreadSheetID(self):
+	def _getSpreadSheetID(self):
 		with open(SPREADSHEET_ID_PATH, 'r') as file:
 			id = file.readline()
 		return id
 
-	def getCredentials(self):
+	def _getCredentials(self):
 		credentials_path = os.path.join(os.getcwd(), CLIENT_SECRET_PATH)
 		return service_account.Credentials.from_service_account_file(
 			credentials_path, scopes=SCOPES)
 
-	def getAllData(self):
-		result = self.sheet.values().get(spreadsheetId=self.getSpreadSheetID(), range='A1:Q100').execute()
-		print(json.dumps(result, indent=4, sort_keys=True))
+	# Fetches all dates and descriptions
+	def getActivities(self):
+		result = self.sheet.get(spreadsheetId=self.sheetID,
+								range=DATE_COLUMN + SERIES_DATA_START + ":" + ACTIVITY_DESC_COLUMN + SERIES_ROW_LIMIT).execute()
 		return result
 	
-	def getColumn(self, column):
-		result = self.sheet.values().get(spreadsheetId=self.getSpreadSheetID(), range=(column + ":" + column)).execute()
-		print(json.dumps(result, indent=4, sort_keys=True))
+	# Fetches times series data for a single yogi
+	def getYogiSeries(self, key):
+		yogi = YOGIS[key]
+		# The delta colum is inbetween gradeCol and scoreCol => included automatically
+		result = self.sheet.get(spreadsheetId=self.sheetID,
+								range=yogi.gradeCol + SERIES_DATA_START + ":" + yogi.scoreCol + SERIES_ROW_LIMIT).execute()
+		return result
+	
+	# Fetches column description for yogi details
+	def getDetialsDesc(self):
+		result = self.sheet.get(spreadsheetId=self.sheetID,
+								range=DETAILS_DESC_COLUMN + DETAILS_DATA_START + ":" + DETAILS_DESC_COLUMN + DETAILS_DATA_END).execute()
+		return result
+
+	# Fetches details data for a single yogi
+	def getYogiDetails(self, key):
+		yogi = YOGIS[key]
+		result = self.sheet.get(spreadsheetId=self.sheetID,
+								range=yogi.detailsCol + DETAILS_DATA_START + ":" + yogi.detailsCol + DETAILS_DATA_END).execute()
 		return result

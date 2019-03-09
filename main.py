@@ -6,24 +6,29 @@ from sheets import SheetsApi
 app = Flask(__name__)
 api = Api(app)
 
-class Sheets(Resource):
+class Activities(Resource):
 	def get(self):
-		sheetsApi = SheetsApi()
-		return sheetsApi.getAllData()
+		return SheetsApi().getActivities()
 
-class SheetsColumn(Resource):
-	def get(self, column):
-		sheetsApi = SheetsApi()
-		return sheetsApi.getColumn(column)
+class YogiSeries(Resource):
+	def get(self, key):
+		return SheetsApi().getYogiSeries(key)
 
-class Test(Resource):
+class DetailsDesc(Resource):
 	def get(self):
-		sheetsApi = SheetsApi()
-		return sheetsApi.getSpreadSheetID()
+		return SheetsApi().getDetialsDesc()
 
-api.add_resource(Sheets, '/sheets/')
-api.add_resource(SheetsColumn, '/sheets/column/<string:column>')
-api.add_resource(Test, '/test/')
+class YogiDetails(Resource):
+	def get(self, key):
+		return SheetsApi().getYogiDetails(key)
+
+
+
+api.add_resource(Activities, '/activities/')
+api.add_resource(YogiSeries, '/yogiSeries/<string:key>')
+api.add_resource(DetailsDesc, '/details/')
+api.add_resource(YogiDetails, '/yogiDetails/<string:key>')
+
 
 if __name__ == '__main__':
 	app.run(debug=True)
