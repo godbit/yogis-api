@@ -34,12 +34,14 @@ class SheetsApi(object):
 	def getYogiSeries(self, key):
 		yogi = YOGIS[key]
 		# The delta colum is inbetween gradeCol and scoreCol => included automatically
-		result = self.sheet.get(spreadsheetId=self.sheetID,
+		series = self.sheet.get(spreadsheetId=self.sheetID,
 								range=yogi.gradeCol + SERIES_DATA_START + ":" + yogi.scoreCol + SERIES_ROW_LIMIT).execute()
-		return result
+		activities = self.getActivities()
+		
+		return self._mapSeries(activities["values"], series["values"])
 	
 	# Fetches column description for yogi details
-	def getDetialsDesc(self):
+	def _getDetialsDesc(self):
 		result = self.sheet.get(spreadsheetId=self.sheetID,
 								range=DETAILS_DESC_COLUMN + DETAILS_DATA_START + ":" + DETAILS_DESC_COLUMN + DETAILS_DATA_END).execute()
 		return result
@@ -47,6 +49,28 @@ class SheetsApi(object):
 	# Fetches details data for a single yogi
 	def getYogiDetails(self, key):
 		yogi = YOGIS[key]
-		result = self.sheet.get(spreadsheetId=self.sheetID,
+		yogiDetailValues = self.sheet.get(spreadsheetId=self.sheetID,
 								range=yogi.detailsCol + DETAILS_DATA_START + ":" + yogi.detailsCol + DETAILS_DATA_END).execute()
-		return result
+		detailsKeys = self._getDetialsDesc()
+
+		return self._mapSingleKeyAndValue(yogiDetailValues["values"], detailsKeys["values"])
+
+	# Maps the activity series with a persons grade/score series. The date of the activity is the key.
+	def _mapSeries(self, activites, series):
+		map = {}
+		for i in range(len(activites)):
+			date = activites[i][0]
+			innerMap = {}
+			innerMap["description"] = activites[i][1]
+			innerMap["grade"] = series[i][0]
+			innerMap["delta"] = series[i][1]
+			innerMap["score"] = series[i][2]
+			map[date] = innerMap
+		return map
+
+	# Maps two lists of lists (with one element) to a dictionary
+	def _mapSingleKeyAndValue(self, keys, values):
+		map = {}
+		for i in range(len(keys)):
+			map[keys[i][0]] = values[i][0]
+		return map

@@ -14,19 +14,13 @@ class YogiSeries(Resource):
 	def get(self, key):
 		return SheetsApi().getYogiSeries(key)
 
-class DetailsDesc(Resource):
-	def get(self):
-		return SheetsApi().getDetialsDesc()
-
 class YogiDetails(Resource):
 	def get(self, key):
 		return SheetsApi().getYogiDetails(key)
 
 
-
 api.add_resource(Activities, '/activities/')
 api.add_resource(YogiSeries, '/yogiSeries/<string:key>')
-api.add_resource(DetailsDesc, '/details/')
 api.add_resource(YogiDetails, '/yogiDetails/<string:key>')
 
 
