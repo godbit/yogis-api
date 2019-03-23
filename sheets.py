@@ -53,7 +53,7 @@ class SheetsApi(object):
 								range=yogi.detailsCol + DETAILS_DATA_START + ":" + yogi.detailsCol + DETAILS_DATA_END).execute()
 		detailsKeys = self._getDetialsDesc()
 
-		return self._mapSingleKeyAndValue(yogiDetailValues["values"], detailsKeys["values"])
+		return self._mapSingleKeyAndValue(detailsKeys["values"], yogiDetailValues["values"])
 
 	# Maps the activity series with a persons grade/score series. The date of the activity is the key.
 	def _mapSeries(self, activites, series):
