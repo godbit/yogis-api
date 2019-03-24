@@ -57,16 +57,16 @@ class SheetsApi(object):
 
 	# Maps the activity series with a persons grade/score series. The date of the activity is the key.
 	def _mapSeries(self, activites, series):
-		map = {}
+		yogiSeries = []
 		for i in range(len(activites)):
-			date = activites[i][0]
 			innerMap = {}
+			innerMap["date"] = activites[i][0]
 			innerMap["description"] = activites[i][1]
 			innerMap["grade"] = series[i][0]
 			innerMap["delta"] = series[i][1]
 			innerMap["score"] = series[i][2]
-			map[date] = innerMap
-		return map
+			yogiSeries.append(innerMap)
+		return yogiSeries
 
 	# Maps two lists of lists (with one element) to a dictionary
 	def _mapSingleKeyAndValue(self, keys, values):
