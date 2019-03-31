@@ -17,7 +17,7 @@ ACTIVITY_DESC_COLUMN = "B"
 
 # Key rows
 DETAILS_DATA_START = str(3)
-DETAILS_DATA_END = str(13) # Limits how many rows the api will search if all data is requested
+DETAILS_DATA_END = str(14) # Limits how many rows the api will search if all data is requested
 
 # Key columns
 DETAILS_DESC_COLUMN = "W"
